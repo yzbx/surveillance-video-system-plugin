@@ -1,1 +1,12 @@
-/usr/local/lib/pkgconfig/SVS-plugin.pc
+# Package Information for pkg-config
+
+prefix=/home/yzbx
+exec_prefix=${prefix}
+libdir=${exec_prefix}/build/build-surveillance-video-system-plugin-Desktop_Qt_5_6_0_GCC_64bit-Default
+includedir_old=${prefix}/git/surveillance-video-system-plugin/src
+
+Name: SVS-plugin
+Description: Open Source Computer Vision Library
+Version: 2016.10.12
+Libs: -L${libdir} -lReDetection
+Cflags: -I${includedir_old}
