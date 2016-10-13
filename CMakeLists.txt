@@ -45,3 +45,5 @@ ENDIF(NOT (cppfile MATCHES "test_.*"))
 ENDFOREACH(cppfile)
 
 add_executable(main main.cpp)
+
+#install (FILES pkgconfig/SVS-plugin.pc DESTINATION "usr/local/lib/pkgconfig")
