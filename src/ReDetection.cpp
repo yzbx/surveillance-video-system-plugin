@@ -110,6 +110,7 @@ double ReDetection::myCompareLocalFeature(InputArray img1, InputArray img2, int 
     Mat desc_1, desc_2;
     extractor.compute(im1, kpts_1, desc_1);
     extractor.compute(im2, kpts_2, desc_2);
+    if(desc_1.empty()||desc_2.empty()) return 0;
 
     //Do matching using features2d
     vector<DMatch> matches_popcount;
@@ -158,6 +159,8 @@ double ReDetection::myCompareLocalFeature(InputArray img1, const Mat &mask1, Inp
     Mat desc_1, desc_2;
     extractor.compute(im1, kpts_1, desc_1);
     extractor.compute(im2, kpts_2, desc_2);
+
+    if(desc_1.empty()||desc_2.empty()) return 0;
 
     //Do matching using features2d
     vector<DMatch> matches_popcount;
