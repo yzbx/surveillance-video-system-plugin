@@ -1,0 +1,43 @@
+cmake_minimum_required (VERSION 2.8)
+project (SVS_plugin)
+cmake_policy(SET CMP0037 OLD)
+cmake_policy(SET CMP0016 OLD)
+SET(LIBRARY_OUTPUT_PATH "${CMAKE_CURRENT_SOURCE_DIR}/lib" CACHE INTERNAL "")
+
+
+# Find all the input files
+FILE(GLOB inFiles RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}"
+    "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
+
+include_directories("${CMAKE_CURRENT_SOURCE_DIR}/src")
+MESSAGE(STATUS "include_directoies: ${include_directoies}")
+
+find_package(PkgConfig)
+pkg_search_module(yzbxLib REQUIRED yzbxlib)
+pkg_search_module(Qt5Core REQUIRED Qt5Core)
+
+include_directories("${yzbxLib_INCLUDE_DIRS}")
+include_directories("${Qt5Core_INCLUDE_DIRS}")
+MESSAGE(STATUS "yzbxLib_INCLUDE_DIRS: ${yzbxLib_INCLUDE_DIRS}")
+MESSAGE(STATUS "Qt5Core_INCLUDE_DIRS: ${Qt5Core_INCLUDE_DIRS}")
+set(CMAKE_BUILD_TYPE RELEASE)
+#set(CMAKE_C_FLAGS "-O0 -ggdb")
+#set(CMAKE_C_FLAGS_DEBUG "-O0 -ggdb")
+#set(CMAKE_C_FLAGS_RELEASE "-O0 -ggdb")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -fPIC")
+#set(CMAKE_CXX_FLAGS_DEBUG "-O0 -ggdb")
+#set(CMAKE_CXX_FLAGS_RELEASE "-O0 -ggdb")
+
+FOREACH(infileName ${inFiles})
+    MESSAGE(STATUS "Process file: ${infileName}")
+    STRING(REGEX REPLACE ".cpp\$" "" outfileName "${infileName}")
+    SET(outfile "${outfileName}.so")
+    MESSAGE(STATUS "Output file: ${outfile}")
+	add_library(${outfile} SHARED ${infileName})
+	target_link_libraries(${outfile} ${OpenCV_LIBS})
+	#SET(outfile_include "${outfile}/.h")
+	#set_property(TARGET ${outfile} PROPERTY PUBLIC_HEADER ${outfile_include})
+ENDFOREACH(infileName)
+
+# Setup a target to drive the conversion
+#ADD_CUSTOM_TARGET(ProcessFiles ALL DEPENDS ${outFiles})
