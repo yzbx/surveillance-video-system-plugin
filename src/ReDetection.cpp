@@ -105,6 +105,7 @@ double ReDetection::myCompareLocalFeature(InputArray img1, InputArray img2, int 
     vector<KeyPoint> kpts_1, kpts_2;
     detector.detect(im1, kpts_1);
     detector.detect(im2, kpts_2);
+    if(kpts_1.size()==0||kpts_2.size()==0) return 0;
 
     Mat desc_1, desc_2;
     extractor.compute(im1, kpts_1, desc_1);
@@ -152,6 +153,7 @@ double ReDetection::myCompareLocalFeature(InputArray img1, const Mat &mask1, Inp
     vector<KeyPoint> kpts_1, kpts_2;
     detector.detect(im1, kpts_1,mask1);
     detector.detect(im2, kpts_2,mask2);
+    if(kpts_1.size()==0||kpts_2.size()==0) return 0;
 
     Mat desc_1, desc_2;
     extractor.compute(im1, kpts_1, desc_1);
@@ -165,13 +167,11 @@ double ReDetection::myCompareLocalFeature(InputArray img1, const Mat &mask1, Inp
 
     for( int i = 0; i < desc_1.rows; i++ )
     {
-        if(matches_popcount[i].distance < 0.1)
+        if(matches_popcount[i].distance < 0.2)
         {
             good_matches.push_back( matches_popcount[i]);
         }
     }
 
     return good_matches.size();
-
-    return 0;
 }
