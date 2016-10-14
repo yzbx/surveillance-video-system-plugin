@@ -81,7 +81,7 @@ double ReDetection::myCompareHist(InputArray img1, const Mat &mask1, InputArray 
     return compareHist(hist1,hist2,method);
 }
 
-double ReDetection::myCompareLocalFeature(InputArray img1, InputArray img2, int method)
+double ReDetection::myCompareLocalFeature(InputArray img1, InputArray img2, int minHessian, double maxDist)
 {
     //    Mat im1 = imread(im1_name, CV_LOAD_IMAGE_GRAYSCALE);
     //    Mat im2 = imread(im2_name, CV_LOAD_IMAGE_GRAYSCALE);
@@ -97,7 +97,7 @@ double ReDetection::myCompareLocalFeature(InputArray img1, InputArray img2, int 
         return -1;
     }
 
-    int minHessian = 400;
+//    int minHessian = 300;
     SurfFeatureDetector detector( minHessian );
     SurfDescriptorExtractor extractor;
     FlannBasedMatcher matcher_popcount;
@@ -116,12 +116,22 @@ double ReDetection::myCompareLocalFeature(InputArray img1, InputArray img2, int 
     vector<DMatch> matches_popcount;
     matcher_popcount.match(desc_1,desc_2,matches_popcount);
 
+    double max_dist = 0; double min_dist = 100;
+    //-- Quick calculation of max and min distances between keypoints
+    for( int i = 0; i < desc_1.rows; i++ )
+    { double dist = matches_popcount[i].distance;
+        if( dist < min_dist ) min_dist = dist;
+        if( dist > max_dist ) max_dist = dist;
+    }
+    printf("-- Max dist : %f with cols=%d\n", max_dist, desc_1.cols);
+    printf("-- Min dist : %f with cols=%d\n", min_dist, desc_1.cols);
+
     //-- Draw only "good" matches (i.e. whose distance is less than 3*min_dist )
     std::vector< DMatch > good_matches;
 
     for( int i = 0; i < desc_1.rows; i++ )
     {
-        if(matches_popcount[i].distance < 0.1)
+        if(matches_popcount[i].distance < maxDist)
         {
             good_matches.push_back( matches_popcount[i]);
         }
@@ -130,7 +140,7 @@ double ReDetection::myCompareLocalFeature(InputArray img1, InputArray img2, int 
     return good_matches.size();
 }
 
-double ReDetection::myCompareLocalFeature(InputArray img1, const Mat &mask1, InputArray img2, const Mat &mask2, int method)
+double ReDetection::myCompareLocalFeature(InputArray img1, const Mat &mask1, InputArray img2, const Mat &mask2, int minHessian, double maxDist)
 {
     //    Mat im1 = imread(im1_name, CV_LOAD_IMAGE_GRAYSCALE);
     //    Mat im2 = imread(im2_name, CV_LOAD_IMAGE_GRAYSCALE);
@@ -146,7 +156,7 @@ double ReDetection::myCompareLocalFeature(InputArray img1, const Mat &mask1, Inp
         return -1;
     }
 
-    int minHessian = 400;
+//    int minHessian = 400;
     SurfFeatureDetector detector( minHessian );
     SurfDescriptorExtractor extractor;
     FlannBasedMatcher matcher_popcount;
@@ -170,7 +180,7 @@ double ReDetection::myCompareLocalFeature(InputArray img1, const Mat &mask1, Inp
 
     for( int i = 0; i < desc_1.rows; i++ )
     {
-        if(matches_popcount[i].distance < 0.2)
+        if(matches_popcount[i].distance < maxDist)
         {
             good_matches.push_back( matches_popcount[i]);
         }

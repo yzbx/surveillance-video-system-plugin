@@ -14,8 +14,8 @@ public:
     ReDetection();
     double myCompareHist(InputArray img1, InputArray img2, int method=1);
     double myCompareHist(InputArray img1,const cv::Mat& mask1,InputArray img2,const cv::Mat& mask2,int method=1);
-    double myCompareLocalFeature(InputArray img1, InputArray img2, int method=1);
-    double myCompareLocalFeature(InputArray img1,const cv::Mat& mask1,InputArray img2,const cv::Mat& mask2,int method=1);
+    double myCompareLocalFeature(InputArray img1, InputArray img2, int minHessian=400, double maxDist=0.2);
+    double myCompareLocalFeature(InputArray img1,const cv::Mat& mask1,InputArray img2,const cv::Mat& mask2,int minHessian=400, double maxDist=0.2);
 };
 
 #endif // REDETECTION_H
