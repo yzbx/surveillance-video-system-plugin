@@ -97,7 +97,7 @@ double ReDetection::myCompareLocalFeature(InputArray img1, InputArray img2, int 
         return -1;
     }
 
-//    int minHessian = 300;
+    //    int minHessian = 300;
     SurfFeatureDetector detector( minHessian );
     SurfDescriptorExtractor extractor;
     FlannBasedMatcher matcher_popcount;
@@ -156,7 +156,7 @@ double ReDetection::myCompareLocalFeature(InputArray img1, const Mat &mask1, Inp
         return -1;
     }
 
-//    int minHessian = 400;
+    //    int minHessian = 400;
     SurfFeatureDetector detector( minHessian );
     SurfDescriptorExtractor extractor;
     FlannBasedMatcher matcher_popcount;
@@ -187,4 +187,49 @@ double ReDetection::myCompareLocalFeature(InputArray img1, const Mat &mask1, Inp
     }
 
     return good_matches.size();
+}
+
+double ReDetection::myCompareHog(InputArray img1, InputArray img2)
+{
+    Mat im1=img1.getMat();
+    Mat im2=img2.getMat();
+    cv::Size imgsize(64,48);
+    if(im1.channels()==3) cvtColor(im1,im1,CV_BGR2GRAY);
+    if(im2.channels()==3) cvtColor(im2,im2,CV_BGR2GRAY);
+    cv::resize(im1,im1,imgsize);
+    cv::resize(im2,im2,imgsize);
+
+    HOGDescriptor hog1(Size(32,16), Size(8,8), Size(4,4), Size(4,4), 9);
+    HOGDescriptor hog2(Size(32,16), Size(8,8), Size(4,4), Size(4,4), 9);
+    vector< float> des1,des2;
+    hog1.compute( im1, des1);
+    hog2.compute(im2,des2);
+    float sum=0;
+    assert(des1.size()==des2.size());
+    for(int i=0;i<des1.size();i++){
+        sum+=fabs(des1[i]-des2[i]);
+    }
+
+    return sum;
+}
+
+double ReDetection::myCompareColor(InputArray img1, InputArray img2)
+{
+    Mat im1=img1.getMat();
+    Mat im2=img2.getMat();
+    cv::Size imgsize(64,48);
+    assert(img1.channels()==img2.channels());
+    cv::resize(im1,im1,imgsize);
+    cv::resize(im2,im2,imgsize);
+    Mat dif;
+    cv::absdiff(im1,im2,dif);
+    double sum=0.0;
+    Scalar sums=cv::sum(dif);
+
+    int C=img1.channels();
+    for(int i=0;i<C;i++){
+        sum+=sums[i];
+    }
+
+    return sum/C;
 }
